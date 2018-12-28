@@ -1,4 +1,7 @@
 '''
+Author: Asheem Chhetri
+Version: 2
+Date: 27 dec-2018
 Train a new network on a data set with train.py
 
 Basic usage: python train.py data_directory
@@ -11,6 +14,7 @@ Use GPU for training: python train.py data_dir --gpu
 '''
 import argparse
 import os
+import sys
 import numpy as np
 import torch
 from torch import nn
@@ -33,7 +37,7 @@ def get_input_args():
     parser.add_argument('--hidden_units', nargs='+', type=int, default=[500, 200], help='hidden layers <only two layers allowed>')
     parser.add_argument('--learn_rate', type=float, default='0.001', help='learn rate')
     parser.add_argument('--drop_rate', type=float, default='0.5', help='drop out rate')
-   
+    parser.add_argument('--verification_loader_data', type=str, default='validation', help='can be either <valdiation> or <test>')
     return parser.parse_args()
 
 def data_load(image_source):
@@ -106,13 +110,13 @@ def model_building(arch_name, hidden_layer, learn_rate, drop_out):
                           ]))
 
     model.classifier = classifier
-    return model
+    return model, classifier
 
-def train_network(device_source, model, epochs, criterion, optimizer, training_data, test_data):
+def train_network(device_source, model, epochs, criterion, optimizer, training_data, test_data, valid_flag):
     print("We will be using this device: {}\n".format(device_source.upper()))
     print("Training started...\n")
     trainloader = training_data
-    testloader = test_data
+    data_to_test = test_data
     loss_set = []
     accuracy_set =[]
     
@@ -126,6 +130,7 @@ def train_network(device_source, model, epochs, criterion, optimizer, training_d
 
     for e in range(epochs):
         running_loss = 0
+        model.train()
         for ii, (inputs, labels) in enumerate(trainloader):
             steps += 1
 
@@ -146,13 +151,20 @@ def train_network(device_source, model, epochs, criterion, optimizer, training_d
 
                 # Turn off gradients for validation, saves memory and computations
                 with torch.no_grad():
-                    test_loss, accuracy = validation(device_source, model, testloader, criterion)
-                loss_set.append(test_loss/len(testloader))
-                accuracy_set.append(accuracy/len(testloader))
-                print("Epoch: {}/{}.. ".format(e+1, epochs),
-                      "Training Loss: {:.3f}.. ".format(running_loss/print_every),
-                      "Test Loss: {:.3f}.. ".format(test_loss/len(testloader)),
-                      "Test Accuracy: {:.3f}".format(accuracy/len(testloader)))
+                    test_loss, accuracy = validation(device_source, model, data_to_test, criterion)
+                loss_set.append(test_loss/len(data_to_test))
+                accuracy_set.append(accuracy/len(data_to_test))
+                if valid_flag:
+                    print("Epoch: {}/{}.. ".format(e+1, epochs),
+                          "Training Loss: {:.3f}.. ".format(running_loss/print_every),
+                          "Validation Loss: {:.3f}.. ".format(test_loss/len(data_to_test)),
+                          "Validation Accuracy: {:.3f}".format(accuracy/len(data_to_test)))    
+
+                else:
+                    print("Epoch: {}/{}.. ".format(e+1, epochs),
+                          "Training Loss: {:.3f}.. ".format(running_loss/print_every),
+                          "Test Loss: {:.3f}.. ".format(test_loss/len(data_to_test)),
+                          "Test Accuracy: {:.3f}".format(accuracy/len(data_to_test)))
 
                 running_loss = 0
                 model.train()
@@ -161,11 +173,11 @@ def train_network(device_source, model, epochs, criterion, optimizer, training_d
     print("\nTotal time taken: {:.0f} minutes {:.0f} seconds".format(diff//60, diff%60))
     return loss_set, accuracy_set
 
-def validation(device_source, model, testloader, criterion):
+def validation(device_source, model, data_to_test, criterion):
     test_loss = 0
     accuracy = 0
     model.to(device_source)
-    for images, labels in testloader:
+    for images, labels in data_to_test:
         images, labels = images.to(device_source), labels.to(device_source)
 
         output = model.forward(images)
@@ -176,22 +188,25 @@ def validation(device_source, model, testloader, criterion):
         accuracy += equality.type(torch.FloatTensor).mean()
     return test_loss, accuracy
 
-def save_checkpoint(input_size, epochs, model, optimizer, criterion, learn_rate, train_data, save_location):
-    checkpoint = {'input_size': input_size,
+def save_checkpoint(arch, input_size, epochs, model, optimizer, classifier, criterion, learn_rate, train_data, save_location):
+    checkpoint = {
+              'input_size': 1024,
               'output_size': 102,
-              'epochs': epochs,
+              'arch': arch,
+              'classifier': classifier,
               'state_dict': model.state_dict(),
-              'optimizer_dict': optimizer.state_dict(),
-              'criterion': criterion,
+              'epochs': epochs,
+              'optimizer': optimizer.state_dict(),
               'learn_rate': learn_rate,
               'class_to_idx': train_data.class_to_idx,
-              'model':model
              }
 
     torch.save(checkpoint, save_location+'/checkpoint.pth')
 
 def main():
     with open('log.txt', 'w') as file:
+        print("Writing to log file commenced...\n\n")
+        file.write("We will record prelim data here for self check.\n\n")
         input_args = get_input_args()
         accuracy_record = []
         loss_record = []
@@ -201,6 +216,7 @@ def main():
         data_dir = input_args.data_directory
         gpu_use = input_args.gpu
         device = 'cpu'
+     
         if gpu_use and torch.cuda.is_available():
             device = 'cuda'
         
@@ -215,17 +231,26 @@ def main():
         print("Hidden Unit[layer1,layer2]: ",input_args.hidden_units)
         print("Learn Rate: ",input_args.learn_rate)
         print("Drop Out Rate: ",input_args.drop_rate)
+        print("Data set to verify: ",input_args.verification_loader_data)
         print("\n------------------------------------------------\n")
 
         train_data, validation_data, test_data, trainloader, validationloader, testloader = data_load(input_args.data_directory)
+        if input_args.verification_loader_data == "validation":
+            data_to_check = validationloader
+            data_flag = True
+        elif input_args.verification_loader_data == "test":
+            data_to_check = testloader
+            data_flag = False
+        else:
+            print(">>>>> Data provided to be tested does NOT belong to test_datset or validation_dataset <<<<<\nPlease retry with correct dataset")
+            sys.exit()
         # Creating a directory for checkpoint
         if not os.path.exists(save_dir): 
             print("Creating directory for checkpoint.\n Dir name: {}".format(save_dir))
             os.makedirs(save_dir)
 
         # Building the model
-        avail_models = ['densenet121', 'vgg16']
-        model = model_building(input_args.arch, input_args.hidden_units, input_args.learn_rate, input_args.drop_rate)
+        model, classifier = model_building(input_args.arch, input_args.hidden_units, input_args.learn_rate, input_args.drop_rate)
         # print(model)
 
         # Setting up criterion and optimzer
@@ -235,22 +260,48 @@ def main():
         # Training the model
         if device == 'cuda':
             print("\nTraining commenced using CUDA as our device...\n")
-            loss_record,accuracy_record = train_network('cuda', model, input_args.epochs, criterion, optimizer, trainloader, testloader)
+            loss_record,accuracy_record = train_network('cuda', model, input_args.epochs, criterion, optimizer, trainloader, data_to_check, data_flag)
         else:
             print("\nTraining commenced using CPU as our device...\n")
-            loss_record,accuracy_record = train_network('cpu', model, input_args.epochs, criterion, optimizer, trainloader, testloader)
-            
+            loss_record, accuracy_record = train_network('cpu', model, input_args.epochs, criterion, optimizer, trainloader, data_to_check, data_flag)
+        
+        # doing a sanity check on test or validation dataset, given what user provided for training
+        if data_flag:
+            model.eval()
+            with torch.no_grad():
+                new_loss_data, new_accuracy_data = validation(device, model, testloader, criterion)
+        else:
+            model.eval()
+            with torch.no_grad():
+                new_loss_data, new_accuracy_data = validation(device, model, validationloader, criterion)
         # Log file for my own record
-        file.write('-----------Loss Record-------------\n\n')
+        file.write('-------------Loss Record---------------\n\n')
         for i in loss_record: file.write(str(i)+'\n')
         file.write('\n-----------Accuracy Record-------------\n')
         for i in accuracy_record: file.write(str(i)+'\n')
-        file.write("\nTest Loss: {:.4f}\nAccuracy: {:.4f}\nAccuracy(in %): {:.2f}%".format(loss_record[-1], accuracy_record[-1], accuracy_record[-1] * 100))
+        
+        if data_flag:
+            print("\n-----------Model Accuracy-------------\n")
+            file.write("\n-----------Model Accuracy-------------\n")
+            print("Validation Loss: {:.4f}\nAccuracy: {:.4f}\nAccuracy(in %): {:.2f}%".format(loss_record[-1], accuracy_record[-1], accuracy_record[-1] * 100))
+            print("\n------------Test Result---------------\n")
+            print("Test Accuracy: {:.2f} %".format((new_accuracy_data/len(testloader)) * 100))
+            file.write("\nValidation Loss: {:.4f}\nAccuracy: {:.4f}\nAccuracy(in %): {:.2f}%".format(loss_record[-1], accuracy_record[-1], accuracy_record[-1] * 100))
+            file.write('\n\n-----------Test Result-------------\n')
+            file.write("Test Accuracy: {:.2f} %".format((new_accuracy_data/len(testloader)) * 100))
+        else:
+            print("\n------------Model Accuracy--------------\n")
+            file.write("\n-----------Model Accuracy-------------\n")
+            print("Test Loss: {:.4f}\nAccuracy: {:.4f}\nAccuracy(in %): {:.2f}%".format(loss_record[-1], accuracy_record[-1], accuracy_record[-1] * 100))
+            print("\n----------Validation Result-------------\n")
+            print("Validation Accuracy: {:.2f} %".format((new_accuracy_data/len(validationloader)) * 100))
+            file.write("\nTest Loss: {:.4f}\nAccuracy: {:.4f}\nAccuracy(in %): {:.2f}%".format(loss_record[-1], accuracy_record[-1], accuracy_record[-1] * 100))
+            file.write('\n\n-----------Validation Result-------------\n')
+            file.write("Validation Accuracy: {:.2f} %".format((new_accuracy_data/len(validationloader)) * 100))
+         
         # Log file writing ends
         
-        print("\n-----------Model Accuracy-------------\n")
-        print("Test Loss: {:.4f}\nAccuracy: {:.4f}\nAccuracy(in %): {:.2f}%".format(loss_record[-1], accuracy_record[-1], accuracy_record[-1] * 100))
         print("\n---------Creating Checkpoint-----------\n")
-        save_checkpoint(input_size[input_args.arch], input_args.epochs, model, optimizer, criterion, input_args.learn_rate, train_data, save_dir)
+        save_checkpoint(input_args.arch, input_size[input_args.arch], input_args.epochs, model, optimizer, classifier, criterion, input_args.learn_rate, train_data, save_dir)
 if __name__ == "__main__":
     main()

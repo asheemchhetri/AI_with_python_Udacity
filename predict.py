@@ -1,4 +1,7 @@
 '''
+Author: Asheem Chhetri
+Version: 2
+Date: 27 dec-2018
 Predict flower name from an image with predict.py along with the probability of that name. That is, you'll pass in a single image /path/to/image and return the flower name and class probability.
 
 Basic usage: python predict.py /path/to/image checkpoint
@@ -9,11 +12,13 @@ Use GPU for inference: python predict.py input checkpoint --gpu
 
 Eg: python predict.py flowers/test/58/image_02719.jpg
 Eg: python predict.py flowers/test/10/image_07090.jpg
+Eg: python predict.py flowers/valid/27/image_06868.jpg
 Eg: python predict.py flowers/test/58/image_02719.jpg --gpu
 '''
 import argparse
 import numpy as np
 import torch
+import torchvision
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 from torchvision import datasets, transforms, models
@@ -43,33 +48,63 @@ def retreive_checkpoint(filepath, device):
     else:
         print("\nUsing CPU as a device to retreive checkpoint...\n")
         checkpoint = torch.load(filepath, map_location=lambda storage, loc: storage)
-    model = checkpoint['model']
+    model = getattr(torchvision.models, checkpoint['arch'])(pretrained=True)
+    for param in model.parameters():
+        param.require_grad = False
+    # ^^^ Based on review. Also freeze the params ^^^
+    model.classifier = checkpoint['classifier']
     model.load_state_dict(checkpoint['state_dict'])
-    optimizer = checkpoint['optimizer_dict']
-    epochs = checkpoint['epochs']
-    learn_rate = checkpoint['learn_rate']
-    criterion = checkpoint['criterion']
     model.class_to_idx = checkpoint['class_to_idx']
+    model.optimizer = checkpoint['optimizer']
+    model.epochs = checkpoint['epochs']
+    model.learn_rate = checkpoint['learn_rate']
     
     return model
 
 def process_image(image):
     ''' Scales, crops, and normalizes a PIL image for a PyTorch model,
         returns an Numpy array
+        Note: Base don review this method is redesigned to use native python PIL methods rather using transforms.
+        Old Code ->
+        img = Image.open(image)
+        #     print(img)
+        #     print(type(img))
+        #     print('\n-------------------------------------------------\n')
+        img_mods = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], 
+                                 [0.229, 0.224, 0.225])])
+        # Apply transformations to the image
+        img = img_mods(img).numpy()
     '''
     img = Image.open(image)
-#     print(img)
-#     print(type(img))
-#     print('\n-------------------------------------------------\n')
-    img_mods = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], 
-                             [0.229, 0.224, 0.225])])
-    # Apply transformations to the image
-    img = img_mods(img).numpy()
-    return img
+    mean = np.array([0.485, 0.456, 0.406])
+    std = np.array([0.229, 0.224, 0.225])
+    width, height = img.size
+    size = 256
+    crop = 224
+    
+    # Resizing the image
+    # Good Clarification: https://stackoverflow.com/questions/4321290/how-do-i-make-pil-take-into-account-the-shortest-side-when-creating-a-thumbnail
+    if width <= height: 
+        img = img.resize((size, int((width / height) * size)))
+    else:
+        img = img.resize((int((width / height) * size), size))
+    
+    # Cropping the image
+    # The crop rectangle, as a (left, upper, right, lower)-tuple (PIL-documentation)
+    # Source: https://stackoverflow.com/questions/9983263/crop-the-image-using-pil-in-python
+    img = img.crop((((img.size[0] - crop)/2), ((img.size[1] - crop)/2), ((img.size[0] + crop)/2), ((img.size[1] + crop)/2)))    
+    
+    # Normalization
+    new_image = np.array(img) / 255
+    new_image = (new_image - mean)/std
+    new_image = new_image.transpose((2, 0, 1))
+    
+    return new_image
+
 '''
 Note: This function will not work here or any image display. Still leaving it here to run it on local machine later.
 '''
