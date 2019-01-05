@@ -75,7 +75,7 @@ def data_load(image_source):
     trainloader = torch.utils.data.DataLoader(train_data, batch_size= 64, shuffle=True)
     validationloader = torch.utils.data.DataLoader(validation_data, batch_size=32, shuffle=False)
     testloader = torch.utils.data.DataLoader(test_data, batch_size=32, shuffle=False)
-    
+
     return train_data, validation_data, test_data, trainloader, validationloader, testloader
 
 def model_building(arch_name, hidden_layer, learn_rate, drop_out):
