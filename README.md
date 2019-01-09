@@ -31,7 +31,7 @@ This nanodegree, talks about AI and its application, specifically images. This i
 
 ---
 
-**1.** Quick Summary of tools used:
+**1. Quick Summary of tools used**:
 
 This project was completed using python 3 as coding enviornment, while major libraries were as follows:
 
@@ -43,7 +43,7 @@ This project was completed using python 3 as coding enviornment, while major lib
 
 I also used *Jupyter Notebook*, to write my code, as it makes it very easy to focus only on code, rather than libraries, dependencies, etc.
 
-**Important: ** Model training is very resource intensive process, which can be completed in *CPU*, but it can take days to train a model that way. Other alternative is *GPU*, which speeds up the mathematical computation, and drastically reduces time required to train a model from days to few hours (depends on your model architecture). I had access to *56 hour* gpu resource available on Udacity server, while other alternatives are:
+**Important**: Model training is very resource intensive process, which can be completed in *CPU*, but it can take days to train a model that way. Other alternative is *GPU*, which speeds up the mathematical computation, and drastically reduces time required to train a model from days to few hours (depends on your model architecture). I had access to *56 hour* gpu resource available on Udacity server, while other alternatives are:
 
 1. Google Colab: CLoud GPU service. I actually performed model optimization on this platform. User friendly, but has 12 hour limit on GPU usage, best way to use it through saving model in various checkpoints, and one can then use for various hours.
 2. Kaggle: I submitted my model there as a part of fun competition. I did not try the GPU there, as I loaded my model, and perform prediction on CPU.
@@ -68,7 +68,7 @@ I also used *Jupyter Notebook*, to write my code, as it makes it very easy to fo
 
 ---
 
-**2.** Project Discussion:
+**2. Project Discussion**:
 
 It is expected, that in next few upcoming years software developers or hardware designers in field of IOT, computer architecture, etc would have incorporate **Deep Learning** models into day-to-day application, to perform activities such as:
 
@@ -80,7 +80,7 @@ In this *Nano Degree* program, I implemented an **Image Classification Applicati
 
 ---
 
-**3.** Repository File Explaination
+**3. Repository File Explaination**:
 
 - image Classifier Project.ipynb
 
@@ -175,22 +175,22 @@ torch.save(checkpoint, path)
 
 **4.** Terminal Usage
 
-###Train
+### Train
 
-```python
+```
 python train.py data_dir --learning_rate 0.01 --hidden_units 512 --epochs 20
 ```
 
-###Predict
+### Predict
 
-```python
+```
 python predict.py flowers/valid/27/image_06868.jpg
 python predict.py flowers/test/58/image_02719.jpg --gpu
 ```
 
 ---
 
-**5.** Data Discussion
+**5. Data Discussion**:
 - Training
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This dataset is the one that is fed to our *model architecture*, and is **trained** based on looking at another data-set, which it does not know about. It is usually the **Validation** dataset. Base don how you write your code, this verification, helps us to understand accuracy of our currently being trained model.
@@ -211,13 +211,17 @@ python predict.py flowers/test/58/image_02719.jpg --gpu
 
 ---
 
-**6.** Result Discussion
+**6. Result Discussion**:
 
-More to come here
+| File Name                                               | Model Architecture | Training Time(minute) | Validation Accuracy(%) | epochs | Scheduler         | Criterion | Optimizer | Learn Rate |
+| :------------------------------------------------------ | :----------------: | :-------------------: | :--------------------: | :----: | :---------------: | :-------: | :-------: | :--------: |
+| image Classifier Project.ipynb                          | densenet121        |  25                   | 89.09                  | 6      | NO                | NLLLoss   | ADAM      | 0.001      |
+| *Pass 1*: image Classifier Project **Optimized**.ipynb  | densenet161        | 196                   | 96.18                  | 20     | YES (gamma = 0.1) | NLLLoss   | ADAM      | 0.001      |
+| *Pass 2*: image Classifier Project **Optimized**.ipynb  | densenet161        | 196                   | 96.18                  | 15     | YES (gamma = 10)  | NLLLoss   | ADAM      | 0.000001   |
 
 ---
 
-**7.** Practical Application
+**7. Practical Application**:
 
 A possible application of this project, can be to train with **new** datasets(could be *health related*, *devices*, *cars*, etc). Upon prediction of new data, we can associate appropriate information related to an input.
 
@@ -227,16 +231,16 @@ Possibilities are endless!
 
 ---
 
-**8.** Where from here?
+**8. Where from here?**
 
 This is just beginning towards my AI journey, my plans are following:
 
-1. Machine Learning Engineering Nano Degree => For in-depth understanding of *Supervised*, *Unsupervised* learning.
-2. Deep Learning Nano Degree => For understanding CNN and RNN.
-3. Computer Vision Nano Degree => For **real time** AI application.
-4. Deep Reinforcement Nano Degree => One of most in-demand skill in AI field, to learn Deep Q-Learning.
-5. Artificial Engineering Nano Degree => Understan *algorithms* applied to NLP, Computer vision, etc and be able to design new algorithm or optimze already available.
-6. Autonomous Flight Drones or Flying Cars(**yep no TYPO here**) Course => What other best application can there be, than this!
+**1. Machine Learning Engineering Nano Degree**: For in-depth understanding of *Supervised*, *Unsupervised* learning.<br/>
+**2. Deep Learning Nano Degree**: For understanding CNN and RNN.<br/>
+**3. Computer Vision Nano Degree**: For **real time** AI application.<br/>
+**4. Deep Reinforcement Nano Degree**: One of most in-demand skill in AI field, to learn Deep Q-Learning.<br/>
+**5. Artificial Engineering Nano Degree**: Understan *algorithms* applied to NLP, Computer vision, etc and be able to design new algorithm or optimze already available.<br/>
+**6. Autonomous Flight Drones or Flying Cars(*yep no TYPO here*) Course**: What other best application can there be, than this!
 
 Path is not **simple** and not **straight-forward**, but as long you are determined to do the hard work, there is nothing that can hold you back!
 
@@ -246,7 +250,7 @@ Path is not **simple** and not **straight-forward**, but as long you are determi
 
 ---
 
-**9.** Completion Certificate
+**9. Completion Certificate**
 
 ![Completion_Certificate](/assets/certificate.svg)
 
@@ -254,6 +258,6 @@ Path is not **simple** and not **straight-forward**, but as long you are determi
 
 ---
 
-**10.** License
+**10. License**
 
-This project is licensed under the terms of the [MIT License](https://opensource.org/licenses/MIT) © Asheem Chhetri 2018-2019
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This project is licensed under the terms of the [MIT License](https://opensource.org/licenses/MIT) © Asheem Chhetri 2018-2019
