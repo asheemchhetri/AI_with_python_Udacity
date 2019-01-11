@@ -245,8 +245,6 @@ Noticeable result **difference**:
 
 *Further prediction results*:
 
-Prediction Result for **densenet121** model, with **89.09%** accuracy:
-
 | Name              | 89.09 (%)                                                          | 99.28 (%)                                             |
 | :---------------- | :----------------------------------------------------------------: | :----------------------------------------------------:|
 | Barbeton Daisy    | ![barbeton_daisy](/assets/AI_nanodegree/barbeton_daisy.PNG)        | ![barbeton_daisy](/assets/99_28/barbeton_daisy.PNG)   |
