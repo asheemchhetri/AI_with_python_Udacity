@@ -204,30 +204,30 @@ Flower Displayed below are from following class: **Pink Primrose**
 
 ![train_sample](/assets/train_1.jpg)
 
-- Testing
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This dataset, that is usally not shown to our model, and is only fed to our model during prediction state. Based on the input, our model should be able to predict which flower is it!
-
-![test_sample](/assets/test_1.jpg)
-
 - Validation
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This dataset, is usually fed to our model, during training process. This way we can track the accuracy of our ongoing trained model.
 
 ![validation_sample](/assets/validation_1.jpg)
 
+- Testing
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This dataset, is **not** shown to our model, and is only fed to our model during *prediction* state. Based on the input, our model should be able to predict which flower is it!
+
+![test_sample](/assets/test_1.jpg)
+
 ---
 
 **6. Result Discussion**:
 
-| File Name                                               | Model Architecture | Training Time(minutes) | Validation Accuracy(%)     | epochs | Scheduler         | Criterion | Optimizer | Learn Rate |
-| :------------------------------------------------------ | :----------------: | :-------------------: | :------------------------: | :----: | :---------------: | :-------: | :-------: | :---------: |
-| image Classifier Project.ipynb                          | densenet121        |  25                   | **89.09**                  | 6      | NO                | NLLLoss   | ADAM      | 0.001       |
-| *Pass 1*: image Classifier Project **Optimized**.ipynb  | densenet161        | 196                   | **96.18**                  | 20     | YES (gamma = 0.1) | NLLLoss   | ADAM      | 0.001       |
-| *Pass 2*: image Classifier Project **Optimized**.ipynb  | densenet161        | 148                   | **98.48**                  | 15     | YES (gamma = 10)  | NLLLoss   | ADAM      | 0.000001    |
-| *Pass 3*: image Classifier Project **Optimized**.ipynb  | densenet161        | 49                    | **98.68**                  | 2      | YES (gamma = 1)   | NLLLoss   | ADAM      | 0.00005     |
-| *Pass 4*: image Classifier Project **Optimized**.ipynb  | densenet161        | 9                     | **96.16**                  | 1      | YES (gamma = 1)   | NLLLoss   | ADAM      | 0.00001     |
-| *Pass 5*: image Classifier Project **Optimized**.ipynb  | densenet161        | 19                    | **99.28**                  | 2      | YES (gamma = 1)   | NLLLoss   | ADAM      | 0.0000001   |
+| File Name                                                 | Model Architecture | Training Time(minutes) | Validation Accuracy(%)     | epochs | Scheduler         | Criterion | Optimizer | Learn Rate |
+| :-------------------------------------------------------- | :----------------: | :-------------------: | :------------------------: | :----: | :---------------: | :-------: | :-------: | :---------: |
+| image Classifier Project.ipynb                            | densenet121        |  25                   | **89.09**                  | 6      | NO                | NLLLoss   | ADAM      | 0.001       |
+| **Pass 1**: image Classifier Project **Optimized**.ipynb  | densenet161        | 196                   | **96.18**                  | 20     | YES (gamma = 0.1) | NLLLoss   | ADAM      | 0.001       |
+| **Pass 2**: image Classifier Project **Optimized**.ipynb  | densenet161        | 148                   | **98.48**                  | 15     | YES (gamma = 10)  | NLLLoss   | ADAM      | 0.000001    |
+| **Pass 3**: image Classifier Project **Optimized**.ipynb  | densenet161        | 49                    | **98.68**                  | 2      | YES (gamma = 1)   | NLLLoss   | ADAM      | 0.00005     |
+| **Pass 4**: image Classifier Project **Optimized**.ipynb  | densenet161        | 9                     | **96.16**                  | 1      | YES (gamma = 1)   | NLLLoss   | ADAM      | 0.00001     |
+| **Pass 5**: image Classifier Project **Optimized**.ipynb  | densenet161        | 19                    | **99.28**                  | 2      | YES (gamma = 1)   | NLLLoss   | ADAM      | 0.0000001   |
 
 **Note**: As we can see, based on input, one may need to perform various passes to *acheive* higher accuracy, change models, learn_rate, etc.
 
@@ -255,14 +255,6 @@ Prediction Result for **densenet121** model, with **89.09%** accuracy:
 
 ---
 
-Prediction Result for **densenet161** model, with **99.28%** accuracy:
-
-![]()
-![]()
-![]()
-![]()
-
----
 
 **7. Practical Application**:
 
