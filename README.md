@@ -253,8 +253,8 @@ Noticeable result **difference**:
 
 | Model Used      | Accuracy (%) | Result |
 | :-------------- | :----------: | :----:|
-| densenet121     | 89.09        | ![](/assets/AI_nanodegree/pink_primrose.png) |
-| densenet161     | 99.28        | ![](/assets/99_28/pink_primrose.png) |
+| densenet121     | 89.09        | ![](/assets/AI_nanodegree/pink_primrose.PNG) |
+| densenet161     | 99.28        | ![](/assets/99_28/pink_primrose.PNG) |
 
 ---
 
