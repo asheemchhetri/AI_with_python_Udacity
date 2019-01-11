@@ -231,12 +231,27 @@ Flower Displayed below are from following class: **Pink Primrose**
 
 **Note**: As we can see, based on input, one may need to perform various passes to *acheive* higher accuracy, change models, learn_rate, etc.
 
+
+Noticeable result **difference**:
+
+*Flower Name*: Pink Primrose
+
+| Model Used      | Accuracy (%)     | Result |
+| :-------------- | :--------------: | :----:|
+| densenet121     | **89.09**        | ![pink_primrose_lower_accuracy](/assets/AI_nanodegree/pink_primrose.PNG) |
+| densenet161     | **99.28**        | ![pink_primrose_higher_accuracy](/assets/99_28/pink_primrose.PNG) |
+
+**Note**: We can see, that the model with **89.09 %** accuracy *cannot* correctly determine, which flower is that. While model with **99.28 %** clearly shows higher *probability* for correct flower name.
+
+*Further prediction results*:
+
 Prediction Result for **densenet121** model, with **89.09%** accuracy:
 
-![]()
-![]()
-![]()
-![]()
+| Name              | 89.09 (%)                                                          | 99.28 (%)                                             |
+| :---------------- | :----------------------------------------------------------------: | :----------------------------------------------------:|
+| Barbeton Daisy    | ![barbeton_daisy](/assets/AI_nanodegree/barbeton_daisy.PNG)        | ![barbeton_daisy](/assets/99_28/barbeton_daisy.PNG)   |
+| Trumpet Creeper   | ![trumpet_creeper](/assets/AI_nanodegree/trumpet_creeper.PNG)      | ![trumpet_creeper](/assets/99_28/trumpet_creeper.PNG) |
+| Globe Thistle     | ![globe_thistle](/assets/AI_nanodegree/globe_thistle.PNG)          | ![globe_thistle](/assets/99_28/globe_thistle.PNG)     |
 
 ---
 
@@ -246,15 +261,6 @@ Prediction Result for **densenet161** model, with **99.28%** accuracy:
 ![]()
 ![]()
 ![]()
-
----
-
-Noticeable result **difference**:
-
-| Model Used      | Accuracy (%) | Result |
-| :-------------- | :----------: | :----:|
-| densenet121     | 89.09        | ![](/assets/AI_nanodegree/pink_primrose.PNG) |
-| densenet161     | 99.28        | ![](/assets/99_28/pink_primrose.PNG) |
 
 ---
 
